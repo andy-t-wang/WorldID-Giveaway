@@ -3,6 +3,7 @@ pragma solidity ^0.8.13;
 
 import { ByteHasher } from './helpers/ByteHasher.sol';
 import { IWorldID } from './interfaces/IWorldID.sol';
+import 'forge-std/console.sol';
 
 contract Contract {
 	using ByteHasher for bytes;
@@ -42,7 +43,9 @@ contract Contract {
 	function verifyAndExecute(address signal, uint256 root, uint256 nullifierHash, uint256[8] calldata proof) public {
 		// First, we make sure this person hasn't done this before
 		if (nullifierHashes[nullifierHash]) revert InvalidNullifier();
-
+		console.log(root);
+		console.log(externalNullifier);
+		console.log(abi.encodePacked(signal).hashToField());
 		// We now verify the provided proof is valid and the user is verified by World ID
 		worldId.verifyProof(
 			root,
@@ -55,7 +58,7 @@ contract Contract {
 
 		// We now record the user has done this, so they can't do it again (proof of uniqueness)
 		nullifierHashes[nullifierHash] = true;
-
+		console.log('finished');
 		// Finally, execute your logic here, for example issue a token, NFT, etc...
 		// Make sure to emit some kind of event afterwards!
 	}
