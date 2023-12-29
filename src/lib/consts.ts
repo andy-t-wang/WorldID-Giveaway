@@ -1,1 +1,1 @@
-export const APP_NAME = 'Verify'
+export const APP_NAME = 'Giveaway'
