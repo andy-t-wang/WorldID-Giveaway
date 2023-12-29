@@ -1,8 +1,9 @@
 import { decode } from '@/lib/wld'
+import { useEffect, useState } from 'react'
 import GiveawayAbi from '@/abi/Giveaway.abi'
 import { keccak256, encodePacked } from 'viem'
+import toast, { Toaster } from 'react-hot-toast'
 import { useAccount, useContractWrite } from 'wagmi'
-import { Suspense, useEffect, useState } from 'react'
 import { ConnectKitButton, useIsMounted } from 'connectkit'
 import { IDKitWidget, ISuccessResult, VerificationLevel, solidityEncode } from '@worldcoin/idkit'
 
@@ -15,9 +16,9 @@ export default function Home() {
 	const [signal, setSignal] = useState<any | null>(null)
 	const [week, setWeek] = useState<number>(1)
 	const [multiplier, setMultiplier] = useState<any>(2)
-	const giveawayName = 'test'
+	const giveawayName = 'test-giveaway'
 
-	const { write } = useContractWrite({
+	const { write, isLoading, reset } = useContractWrite({
 		address: process.env.NEXT_PUBLIC_CONTRACT_ADDR as `0x${string}`,
 		abi: GiveawayAbi,
 		functionName: 'claimGiveaway',
@@ -34,7 +35,15 @@ export default function Home() {
 			giveawayName,
 			BigInt(week),
 		],
+		onSuccess(data) {
+			console.log('Success', data)
+			toast('Successfully Claimed', { icon: '✅' })
+		},
+		onError(error) {
+			toast('Error Claiming', { icon: '❌' })
+		},
 	})
+
 	useEffect(() => {
 		setSignal(solidityEncode(['uint256', 'address'], [BigInt(multiplier), address!]))
 		// Get the hex string value of the encoded then we parse this when we calculate the external nullifier
@@ -63,6 +72,7 @@ export default function Home() {
 
 	return (
 		<main className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-6">
+			<Toaster />
 			<h1 className="text-3xl font-bold text-gray-700 mb-8">Welcome to our Giveaway!</h1>
 			<div className="w-full max-w-md mx-auto bg-white shadow-md round-lg overflow-hidden rounded-md">
 				<div className="flex items-start justify-between p-6 flex-col">
@@ -83,9 +93,9 @@ export default function Home() {
 				</div>
 				<div className="flex items-center justify-between p-6 border-t">
 					<div className="flex items-center">
-						<a className="text-sm text-gray-500 hover:underline" href="#">
-							Terms & Conditions
-						</a>
+						<button className="text-sm text-gray-500 hover:underline" onClick={() => setProof(null)}>
+							Reset Giveaway
+						</button>
 					</div>
 					{isMounted && address && signal && action ? (
 						proof ? (
@@ -96,7 +106,7 @@ export default function Home() {
 									write()
 								}}
 							>
-								Submit Transaction
+								{isLoading ? 'Loading...' : 'Submit Transaction'}
 							</button>
 						) : (
 							<IDKitWidget
