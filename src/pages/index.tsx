@@ -14,7 +14,7 @@ export default function Home() {
 	const [action, setAction] = useState<any | null>(null)
 	const [signal, setSignal] = useState<any | null>(null)
 	const [week, setWeek] = useState<number>(1)
-	const [multiplier, setMultiplier] = useState<any>(1)
+	const [multiplier, setMultiplier] = useState<any>(2)
 	const giveawayName = 'test'
 
 	const { write } = useContractWrite({
@@ -63,63 +63,63 @@ export default function Home() {
 
 	return (
 		<main className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-6">
-			<Suspense>
-				<div className="w-full max-w-md mx-auto bg-white shadow-md round-lg overflow-hidden">
-					<div className="flex items-start justify-between p-6 flex-col">
-						<div className="flex items-center">
-							<div className="mb-2">
-								<h2 className="text-lg font-semibold text-gray-700">Giveaway: {giveawayName}</h2>
-								<p className="text-sm text-gray-500"> User: {isMounted ? address : ''}</p>
-							</div>
+			<h1 className="text-3xl font-bold text-gray-700 mb-8">Welcome to our Giveaway!</h1>
+			<div className="w-full max-w-md mx-auto bg-white shadow-md round-lg overflow-hidden rounded-md">
+				<div className="flex items-start justify-between p-6 flex-col">
+					<div className="flex items-center">
+						<div className="mb-2">
+							<h2 className="text-lg font-semibold text-gray-700">Giveaway: {giveawayName}</h2>
+							<p className="text-sm text-gray-500"> User: {isMounted ? address : ''}</p>
 						</div>
-						<div className="text-sm px-2 py-1 bg-gray-200 text-gray-800 rounded-full">Week: {week}</div>
 					</div>
-					<div className="p-6">
-						<p className="text-lg font-semibold text-gray-700">Earnings Multiplier: {multiplier}</p>
-						<p className="text-sm text-gray-500 mt-4">
-							Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas magna velit, aliquet at
-							pellentesque vitae, convallis at metus. Nulla facilisi.
-						</p>
-					</div>
-					<div className="flex items-center justify-between p-6 border-t">
-						<div className="flex items-center">
-							<a className="text-sm text-gray-500 hover:underline" href="#">
-								Terms & Conditions
-							</a>
-						</div>
-						{isMounted && address && signal && action ? (
-							proof ? (
-								<button
-									onClick={() => {
-										logContractValues()
-										write()
-									}}
-								>
-									submit tx
-								</button>
-							) : (
-								<IDKitWidget
-									signal={signal} // prize and address
-									action={action} // Giveaway number
-									onError={error => console.log(error)}
-									onSuccess={setProof}
-									verification_level={VerificationLevel.Device}
-									app_id={process.env.NEXT_PUBLIC_APP_ID as `app_${string}`}
-								>
-									{({ open }) => (
-										<button
-											className="text-sm py-2 px-3 bg-indigo-600 text-white rounded-md hover:bg-indigo-500 focus:outline-none focus:bg-indigo-500"
-											onClick={open}
-										>{`Claim with world id`}</button>
-									)}
-								</IDKitWidget>
-							)
-						) : (
-							<ConnectKitButton />
-						)}
-					</div>
+					<div className="text-sm px-2 py-1 bg-gray-200 text-gray-800 rounded-full">Week: {week}</div>
 				</div>
-			</Suspense>
+				<div className="p-6 pt-0">
+					<p className="text-lg font-semibold text-gray-700">Earnings Multiplier: {multiplier}</p>
+					<p className="text-sm text-gray-500 mt-4">
+						This is a demo project that implements on chain verification where the signal and action must be
+						reconstructed from variables with different types passed into the verify contract call.
+					</p>
+				</div>
+				<div className="flex items-center justify-between p-6 border-t">
+					<div className="flex items-center">
+						<a className="text-sm text-gray-500 hover:underline" href="#">
+							Terms & Conditions
+						</a>
+					</div>
+					{isMounted && address && signal && action ? (
+						proof ? (
+							<button
+								className="text-sm py-2 px-3 bg-indigo-600 text-white rounded-md hover:bg-indigo-500 focus:outline-none focus:bg-indigo-500"
+								onClick={() => {
+									logContractValues()
+									write()
+								}}
+							>
+								Submit Transaction
+							</button>
+						) : (
+							<IDKitWidget
+								signal={signal} // prize and address
+								action={action} // Giveaway number
+								onError={error => console.log(error)}
+								onSuccess={setProof}
+								verification_level={VerificationLevel.Device}
+								app_id={process.env.NEXT_PUBLIC_APP_ID as `app_${string}`}
+							>
+								{({ open }) => (
+									<button
+										className="text-sm py-2 px-3 bg-indigo-600 text-white rounded-md hover:bg-indigo-500 focus:outline-none focus:bg-indigo-500"
+										onClick={open}
+									>{`Claim with World Id`}</button>
+								)}
+							</IDKitWidget>
+						)
+					) : (
+						<ConnectKitButton />
+					)}
+				</div>
+			</div>
 		</main>
 	)
 }
